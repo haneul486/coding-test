@@ -58,15 +58,31 @@ public class LeetCode80_RemoveDuplicatesFromSortedArrayII {
 
 class Solution2 {
     public int removeDuplicates(int[] nums) {
-        //1. 최대 2개의 중복 값을 식별하기 위해 두가지 변수를 생성한다.
-        //1-1. 현재 체크중인 값
-        //1-2. 현재 체크중인 값의 갯수
-        //2. 중복제거가 끝난 array의 길이를 체크하기 위한 변수를 생성한다.
-        //3. 반복문을 수행하면서 새로운 숫자가 나오면 체크중값을 변경한고 갯수도 초기화한다.
-        //3-1. 같은 수가 반복될경우 갯수를 최대 2까지만 증가시키고 결과반환값도 증가시킨다.
-        //3-2. 같은 수가 나왔을때 중복제거를 위해 nums에서 읽어나간 값을 중복제거 위치에 쌓는다, 쌓을 위치는 result값이 된다.
-        //4. 체크중 갯수가 2를 초과하면 무시하면서 다음체크를 이어나간다.
+        //1. 빈 배열이 들어왔을 경우 0을 리턴
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+        int curVal = nums[0];
+        int curValCnt = 1;
+        int result = 1;
+        for (int i = 1; i < nums.length; i++) {
+            if (nums[i] != curVal) {
+                curVal = nums[i];
+                curValCnt = 1;
+                result++;
+                removeVal(nums, result-1, i);
+            }else{
+                if(curValCnt == 1){
+                    curValCnt++;
+                    result++;
+                    removeVal(nums, result-1, i);
+                }
+            }
+        }
 
-        return 0;
+        return result;
+    }
+    public void removeVal(int[] nums, int setIndex, int getIndex) {
+        nums[setIndex] = nums[getIndex];
     }
 }
