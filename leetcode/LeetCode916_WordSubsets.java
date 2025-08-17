@@ -98,36 +98,35 @@ public class LeetCode916_WordSubsets {
         System.out.println(exp.equals(act) ? "✅ PASSED\n" : "❌ FAILED\n");
     }
 }
-
 class Solution916 {
     public List<String> wordSubsets(String[] words1, String[] words2) {
-        List<String> result = new ArrayList<>();
-        //워드 하나하나 검증을 시작
-        for (String word : words1) {
-            checkWord(word, words2, result);
-        }
-        return result;
-    }
-
-    private void checkWord(String word, String[] words2, List<String> result) {
-        int passCount = 0;//word2 검증결과 숫자를 저장할 flag length와 같으면 통과
-        //"warrior" "wrr"
-        for (int i = 0; i < words2.length; i++) {
-            String t = new String(word);
-            //t에서 words2[i]의 문자열을 하나씩 지워나가고
-            char [] words2Array = words2[i].toCharArray();
-            for (int j = 0; j < words2Array.length; j++) {
-                t = t.replaceFirst(""+words2Array[j], "");
+        // 1) words2 압축: 알파벳별 요구 최소 개수 need[c]
+        int[] need = new int[26];
+        for (String b : words2) {
+            int[] cnt = new int[26];
+            for (int i = 0; i < b.length(); i++) {
+                cnt[b.charAt(i) - 'a']++;
             }
-            //최종 결과(t.length)가 word.length - words[i].length == t면 통과
-            if(word.length() - words2[i].length() == t.length()){
-                passCount++;
+            for (int c = 0; c < 26; c++) {
+                need[c] = Math.max(need[c], cnt[c]);
             }
         }
-        if(passCount == words2.length){
-            result.add(word);
+
+        // 2) words1 각 단어가 need를 만족하는지 확인
+        List<String> res = new ArrayList<>();
+        outer:
+        for (String a : words1) {
+            int[] have = new int[26];
+            for (int i = 0; i < a.length(); i++) {
+                have[a.charAt(i) - 'a']++;
+            }
+            for (int c = 0; c < 26; c++) {
+                if (have[c] < need[c]) {
+                    continue outer; // 이 단어는 조건 불만족
+                }
+            }
+            res.add(a);
         }
+        return res;
     }
-
-
 }
