@@ -114,30 +114,29 @@ public class LeetCode46_Permutations {
 }
 
 class Solution46 {
-
     public List<List<Integer>> permute(int[] nums) {
-        // 시간복잡도: O(n * n!)  (생성해야 하는 순열의 수가 n!)
-        // 공간복잡도: O(n) (재귀 스택 + 경로 저장; 결과 리스트 제외)
-        List<List<Integer>> result = new ArrayList<>();
-        boolean[] used = new boolean[nums.length];
-        backtrack(nums, used, new ArrayList<>(), result);
+        List<List<Integer>> result = new ArrayList();
+        dfs(nums, 0, result);
         return result;
     }
-
-    private void backtrack(int[] nums, boolean[] used, List<Integer> path, List<List<Integer>> out) {
-        if (path.size() == nums.length) {
-            out.add(new ArrayList<>(path));
-            return;
+    public void dfs(int[]nums, int cur, List<List<Integer>> result){
+        if(cur == nums.length){
+            List<Integer> list = new ArrayList();
+            for(int i = 0 ; i < nums.length ; i++){
+                list.add(nums[i]);
+            }
+            result.add(list);
+            return ;
         }
-        for (int i = 0; i < nums.length; i++) {
-            if (used[i])
-                continue;
-
-            used[i] = true;
-            path.add(nums[i]);
-            backtrack(nums, used, path, out);
-            path.remove(path.size() - 1);
-            used[i] = false;
+        for(int cur2 = cur ; cur2 < nums.length ; cur2++){
+            swap(nums, cur, cur2);
+            dfs(nums, cur+1, result);
+            swap(nums, cur, cur2);
         }
+    }
+    public void swap(int [] nums, int cur, int cur2){
+        int t = nums[cur];
+        nums[cur] = nums[cur2];
+        nums[cur2] = t;
     }
 }
