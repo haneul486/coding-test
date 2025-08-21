@@ -66,25 +66,52 @@ public class LeetCode787_CheapestFlightsWithinKStops {
 
 class Solution787 {
     public int findCheapestPrice(int n, int[][] flights, int src, int dst, int k) {
-        final int INF = 1_000_000_000;
-        int[] minCost = new int[n];
-        Arrays.fill(minCost, INF);
-        minCost[src] = 0;
+        //Output: 700
+        //Input: n = 4, flights = [[0,1,100],[1,2,100],[2,0,100],[1,3,600],[2,3,200]], src = 0, dst = 3, k = 1
+        //첫번째 루프
+        //costs
+        //0 0
+        //1 X
+        //2 X
+        //3 X
+        //nextCosts
+        //0 0
+        //1 100
+        //2 X
+        //3 X
+        //minCost = X;
+        //Input: n = 4, flights = [[0,1,100],[1,2,100],[2,0,100],[1,3,600],[2,3,200]], src = 0, dst = 3, k = 1
+        //두번째 루프
+        //        //costs
+        //        //0 0
+        //        //1 100
+        //        //2 X
+        //        //3 X
+        //        //nextCosts
+        //        //0 0
+        //        //1 100
+        //        //2 200
+        //        //3 700
+        //        //minCost = X;
 
-        for (int i = 0; i <= k; i++) {
-            int[] nextCost = Arrays.copyOf(minCost, n);
-            for (int[] flight : flights) {
-                int fromCity = flight[0];
-                int toCity = flight[1];
-                int price = flight[2];
-                if (minCost[fromCity] == INF) continue;
-                if (minCost[fromCity] + price < nextCost[toCity]) {
-                    nextCost[toCity] = minCost[fromCity] + price;
+
+        int [] minCosts = new int[n];
+        int MAX = 100_000_000;
+        Arrays.fill(minCosts, MAX);
+        minCosts[src] = 0;
+        for (int i = 0; i <= k ; i++) {
+            int [] nextCosts = Arrays.copyOf(minCosts,n);
+            for (int j = 0; j < flights.length; j++) {
+                int from = flights[j][0];
+                int to = flights[j][1];
+                int price = flights[j][2];
+                if(minCosts[from] == MAX) continue;
+                if(minCosts[from] + price < nextCosts[to]){
+                    nextCosts[to] = minCosts[from] + price;
                 }
             }
-            minCost = nextCost;
+            minCosts = nextCosts;
         }
-
-        return minCost[dst] >= INF ? -1 : minCost[dst];
+        return minCosts[dst] >= MAX ? -1 : minCosts[dst];
     }
 }
