@@ -72,8 +72,32 @@ public class LeetCode2353_DesignFoodRatingSystem {
     }
 
     static class FoodRatings {
+        class FoodRating {
+            String food;
+            String cuisine;
+            int rating;
+            public FoodRating(String food, String cuisine, int rating) {
+                this.food = food;
+                this.cuisine = cuisine;
+                this.rating = rating;
+            }
+        }
+        //저장은 cuising을 기준키로 max값의 foodRating을 저장
+        //저장할때 food의 cuisine별개로 저장해야함.
+        //changeRating에서 food를 통해서 cuisines를 추출할 수 있어야함.
+        //총 두개의 collection을 운영함.
+        Map<String, FoodRating> maxMap = new HashMap<>();
+        Map<String, String> cuisineMap = new HashMap<>();
         public FoodRatings(String[] foods, String[] cuisines, int[] ratings) {
-            throw new UnsupportedOperationException("Implement me");
+            for (int i = 0; i < foods.length; i++) {
+                FoodRating foodRating = maxMap.get(cuisines[i]);
+                if (foodRating == null) {
+                    maxMap.put(cuisines[i], new FoodRating(foods[i], cuisines[i], ratings[i]));
+                    cuisineMap.put(foods[i], cuisines[i]);
+                } else {
+                    Math.max(maxMap.get(cuisines[i]).rating, ratings[i]);
+                }
+            }
         }
 
         public void changeRating(String food, int newRating) {
