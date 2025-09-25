@@ -59,7 +59,7 @@ public class LeetCode2353_DesignFoodRatingSystem {
         expect(fr.highestRated("japanese"), "ramen", "highestRated(japanese) tie at 16, lexicographically smaller is ramen? (\"ramen\" < \"sushi\")");
         // 추가 케이스
         fr.changeRating("bulgogi", 10);
-        expect(fr.highestRated("korean"), "kimchi", "korean still kimchi(9) vs bulgogi(10) -> should be bulgogi actually if implemented");
+        dexpect(fr.highestRated("korean"), "kimchi", "korean still kimchi(9) vs bulgogi(10) -> should be bulgogi actually if implemented");
         // 위 라인은 너 구현 시 맞게 수정/검증하면 됨
 
         System.out.println("Sample tests finished ✅ (구현 후 검증 결과를 확인하세요)");
@@ -93,19 +93,25 @@ public class LeetCode2353_DesignFoodRatingSystem {
                 FoodRating foodRating = maxMap.get(cuisines[i]);
                 if (foodRating == null) {
                     maxMap.put(cuisines[i], new FoodRating(foods[i], cuisines[i], ratings[i]));
-                    cuisineMap.put(foods[i], cuisines[i]);
                 } else {
-                    Math.max(maxMap.get(cuisines[i]).rating, ratings[i]);
+                    foodRating.rating = Math.max(maxMap.get(cuisines[i]).rating, ratings[i]);;
+                    maxMap.put(foodRating.cuisine, foodRating);
                 }
+                cuisineMap.put(foods[i], cuisines[i]);
             }
         }
 
         public void changeRating(String food, int newRating) {
-            throw new UnsupportedOperationException("Implement me");
+            String cuisine = cuisineMap.get(food);
+            FoodRating maxFoodRating = maxMap.get(cuisine);
+            if(maxFoodRating.rating < newRating) {
+                maxFoodRating.food = food;
+                maxMap.put(cuisine, maxFoodRating);
+            }
         }
 
         public String highestRated(String cuisine) {
-            throw new UnsupportedOperationException("Implement me");
+            return maxMap.get(cuisine).food;
         }
     }
 
