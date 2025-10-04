@@ -59,7 +59,7 @@ public class LeetCode2353_DesignFoodRatingSystem {
         expect(fr.highestRated("japanese"), "ramen", "highestRated(japanese) tie at 16, lexicographically smaller is ramen? (\"ramen\" < \"sushi\")");
         // 추가 케이스
         fr.changeRating("bulgogi", 10);
-        dexpect(fr.highestRated("korean"), "kimchi", "korean still kimchi(9) vs bulgogi(10) -> should be bulgogi actually if implemented");
+        expect(fr.highestRated("korean"), "kimchi", "korean still kimchi(9) vs bulgogi(10) -> should be bulgogi actually if implemented");
         // 위 라인은 너 구현 시 맞게 수정/검증하면 됨
 
         System.out.println("Sample tests finished ✅ (구현 후 검증 결과를 확인하세요)");
@@ -82,37 +82,42 @@ public class LeetCode2353_DesignFoodRatingSystem {
                 this.rating = rating;
             }
         }
-        //저장은 cuising을 기준키로 max값의 foodRating을 저장
-        //저장할때 food의 cuisine별개로 저장해야함.
-        //changeRating에서 food를 통해서 cuisines를 추출할 수 있어야함.
-        //총 두개의 collection을 운영함.
+
+        // food → FoodRating (food명으로 빠르게 찾기)
+        Map<String, FoodRating> allMap = new HashMap<>();
+        // cuisine → 최고 FoodRating
         Map<String, FoodRating> maxMap = new HashMap<>();
-        Map<String, String> cuisineMap = new HashMap<>();
+
         public FoodRatings(String[] foods, String[] cuisines, int[] ratings) {
             for (int i = 0; i < foods.length; i++) {
-                FoodRating foodRating = maxMap.get(cuisines[i]);
-                if (foodRating == null) {
-                    maxMap.put(cuisines[i], new FoodRating(foods[i], cuisines[i], ratings[i]));
-                } else {
-                    foodRating.rating = Math.max(maxMap.get(cuisines[i]).rating, ratings[i]);;
-                    maxMap.put(foodRating.cuisine, foodRating);
+                allMap.put(foods[i], new FoodRating(foods[i], cuisines[i], ratings[i]));
+            }
+            setMaxMap();
+        }
+
+        // cuisine별 최고 평점(동점 시 food 사전순)을 다시 계산
+        private void setMaxMap() {
+            maxMap.clear();
+            for (FoodRating cur : allMap.values()) {
+                FoodRating best = maxMap.get(cur.cuisine);
+                if (best == null
+                        || cur.rating > best.rating
+                        || (cur.rating == best.rating && cur.food.compareTo(best.food) < 0)) {
+                    maxMap.put(cur.cuisine, cur);
                 }
-                cuisineMap.put(foods[i], cuisines[i]);
             }
         }
 
         public void changeRating(String food, int newRating) {
-            String cuisine = cuisineMap.get(food);
-            FoodRating maxFoodRating = maxMap.get(cuisine);
-            if(maxFoodRating.rating < newRating) {
-                maxFoodRating.food = food;
-                maxMap.put(cuisine, maxFoodRating);
-            }
+            FoodRating f = allMap.get(food);
+            if (f == null) return; // 또는 IllegalArgumentException 던지기
+            f.rating = newRating;   // 같은 객체 참조이므로 allMap에 다시 put 불필요
+            setMaxMap();            // 전체 재계산 (간단하지만 O(N))
         }
 
         public String highestRated(String cuisine) {
-            return maxMap.get(cuisine).food;
+            FoodRating fr = maxMap.get(cuisine);
+            return fr == null ? null : fr.food; // 필요시 예외로 처리 가능
         }
     }
-
 }
