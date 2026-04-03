@@ -1,0 +1,4 @@
+interface:
+  display_name: "LeetCode Java 설정"
+  short_description: "이 저장소 규칙에 맞는 LeetCode Java 파일을 만듭니다."
+  default_prompt: "Use $leetcode-java-problem-setup to 이 저장소 규칙에 맞는 LeetCode Java 문제 파일을 생성하거나 정리해 주세요."
